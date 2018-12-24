@@ -1,0 +1,18 @@
+#!/bin/sh
+
+days=${1:-1}
+
+osascript <<EOF
+  set due to (current date + (${days} * days))
+  tell due
+    set {its hours, its minutes, its seconds} to {9, 0, 0}
+  end tell
+  log "postponing to: " & due
+  tell application "Reminders"
+    set rs to every reminder whose completed is false and due date is less than current date
+    repeat with r in rs
+      log name of r as string
+      set due date of r to due
+    end repeat
+  end tell
+EOF
